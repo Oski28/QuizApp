@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edycja pytania</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<a class="btn btn-dark btn-lg my-2 m-1" aria-current="page" href="#" th:href="@{{url} (url=${returnUrl})}">Powrót</a>
+<main class="jumbotron text-center" sec:authorize="hasRole('TEACHER')">
+    <div class="container-fluid text-center h-100">
+        <form th:action="@{/question/edit/{id} (id = ${question.id})}" th:object="${question}" method="put" th:method="put"
+              style="margin: 0 auto;" class="w-75">
+            <h1 class="jumbotron-heading">Edytuj pytanie</h1>
+            <div class="my-3 p-3 bg-white rounded box-shadow">
+                <p>
+                    <label for="inputText" class="sr-only">Treść pytania</label>
+                    <input type="text" id="inputText" class="form-control"
+                           th:field="${question.text}" placeholder="Treść pytania" required th:min="10" th:max="200">
+                </p>
+                <ul class="text-danger" th:if="${#fields.hasErrors('text')}" th:each="error: ${#fields.errors('text')}">
+                    <li th:each="message : ${error.split(',')}">
+                        <p class="error-message" th:text="${message}"></p>
+                    </li>
+                </ul>
+                <div th:each="answer,i: ${question.answers}" >
+                    <input hidden="hidden" th:field="${question.answers[__${i.index}__].id}" th:value="${question.answers[__${i.index}__].id}">
+                    <p>
+                        <input type="checkbox" th:field="${question.answers[__${i.index}__].correct}" th:value="${question.answers[__${i.index}__].correct}">
+                        <input class="w-75" type="text" th:field="${question.answers[__${i.index}__].text}" th:value="${question.answers[__${i.index}__].correct}"
+                               placeholder="Treść odpowiedzi" th:max="100">
+                    </p>
+                </div>
+                <p class="text-danger" th:if="${param.error}">
+                    Answers must have 2 or more positions and cannot have empty text field and longer than 100 characters.
+                </p>
+                <p>
+                    <button type="submit" class="btn btn-dark" value="Dodaj pytanie">Edytuj pytanie</button>
+                </p>
+            </div>
+        </form>
+    </div>
+</main>
+<footer th:replace="fragments/footer.html"></footer>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</body>
+</html>

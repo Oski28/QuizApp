@@ -1,0 +1,15 @@
+html, body, .container {
+    height: 100%;
+}
+
+body {
+    background-color: #eee;
+}
+
+main {
+    min-height: 80vh;
+}
+
+.desc-pad {
+    padding-top: 50px;
+}

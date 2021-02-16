@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikacja Quiz</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<main class="jumbotron text-center">
+    <div class="container d-flex h-75 align-middle div_center">
+        <div class="col align-self-center">
+        <h1 class="jumbotron-heading">Aplikacja Quiz</h1>
+        <p class="lead text-muted">Projekt z przedmiotu Technologie Web i Java.</p>
+        <p>
+            <a class="btn btn-dark btn-lg my-2 w-50" href="#" th:href="@{/login}" role="button">Zaloguj</a>
+        </p>
+        <p>
+            <a class="btn btn-dark btn-lg my-2 w-50" href="#" th:href="@{/description}" role="button">Opis
+                projektu</a>
+        </p>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/footer.html"></footer>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</body>
+</html>

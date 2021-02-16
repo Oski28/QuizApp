@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizy</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<a class="btn btn-dark btn-lg my-2 m-1" aria-current="page" href="#" th:href="@{/subject}">Wróć do zarządzania
+    przedmiotami</a>
+<main class="jumbotron text-center">
+    <div class="container d-flex h-75 align-middle div_center" sec:authorize="hasRole('TEACHER')">
+        <div class="col align-self-center">
+            <h1 class="jumbotron-heading">Zarządzanie quizami</h1>
+            <p>
+                <a class="btn btn-dark btn-lg my-2 w-50" href="#"
+                   th:href="@{__${#httpServletRequest.requestURI}__/add}">Dodaj quiz</a>
+            </p>
+        </div>
+    </div>
+    <div class="container d-flex h-75 align-middle div_center" sec:authorize="hasRole('TEACHER')">
+        <div class="col align-self-center" th:if="${quizzes.totalPages > 0}">
+            <h1 class="jumbotron-heading">Dostępne quizy</h1>
+            <div th:each="quiz: ${quizzes}" th:object="${quiz}" class="my-3 p-3 bg-white rounded box-shadow">
+                <label>Przewidziany czas w minutach: </label>
+                <p class="lead text-muted" th:text="*{time}">Ilość czasu</p>
+                <label>Ilość pytań: </label>
+                <p class="lead text-muted" th:text="*{numberOfQuestions}">Ilość pytań</p>
+                <form th:action="@{__${#httpServletRequest.requestURI}__/{id} (id = ${quiz.id})}" th:method="delete">
+                    <button type="submit" class="btn btn-dark my-2">
+                        Usuń quiz
+                    </button>
+                </form>
+                <p>
+                    <a class="btn btn-dark my-2" href="#" role="button"
+                       th:href="@{__${#httpServletRequest.requestURI}__/edit/{id} (id = ${quiz.id})}">Edytuj quiz</a>
+                </p>
+            </div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:if="${quizzes.getPageable().getPageNumber() > 0}">
+                        <a class="page-link" href="#"
+                           th:href="@{__${#httpServletRequest.requestURI}__(size=${quizzes.size}, page=${quizzes.getPageable().getPageNumber()})}">Poprzednia</a>
+                    </li>
+                    <li class="page-item" th:each="pageNumber : ${pageNumbers}">
+                         <span class="page-link" th:if="${pageNumber == (quizzes.getPageable().getPageNumber()+1)}"
+                               th:text="${pageNumber}">
+                            1
+                        <span class="sr-only">(current)</span>
+                        </span>
+                        <a th:unless="${pageNumber == (quizzes.getPageable().getPageNumber()+1)}" class="page-link"
+                           href="#" th:href="@{__${#httpServletRequest.requestURI}__(size=${quizzes.size}, page=${pageNumber})}"
+                           th:text="${pageNumber}"
+                        >1</a>
+                    </li>
+                    <li class="page-item" th:if="${quizzes.getPageable().getPageNumber() < pageNumbers.size()-1}">
+                        <a class="page-link" href="#"
+                           th:href="@{__${#httpServletRequest.requestURI}__(size=${quizzes.size}, page=${quizzes.getPageable().getPageNumber()+2})}">Następna</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col align-self-center" th:unless="${quizzes.totalPages > 0}">
+            <h1 class="jumbotron-heading">Brak dostępnych quizów</h1>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/footer.html"></footer>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</body>
+</html>

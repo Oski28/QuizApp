@@ -1,0 +1,12 @@
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <a sec:authorize="isAuthenticated()" class="nav-link active" aria-current="page"
+           href="#" th:href="@{/homepage}">Aplikacja Quiz</a>
+        <a sec:authorize="isAnonymous()" class="nav-link active" aria-current="page"
+           href="#" th:href="@{/}">Aplikacja Quiz</a>
+        <div class="d-flex">
+            <a sec:authorize="isAuthenticated()" class="nav-link active" aria-current="page"
+               href="#" th:href="@{/logout}">Wyloguj</a>
+        </div>
+    </div>
+</nav>

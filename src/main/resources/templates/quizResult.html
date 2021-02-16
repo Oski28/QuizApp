@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wynik Quizu</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<a class="btn btn-dark btn-lg my-2 m-1" aria-current="page" href="#" th:href="@{/quiz}">Wróć do listy dostępnych dla
+    Ciebie quizów</a>
+<main class="jumbotron text-center" sec:authorize="hasRole('STUDENT')">
+    <div class="container d-flex h-75 align-middle div_center">
+        <div class="col align-self-center">
+            <h1 class="jumbotron-heading">Twój wynik z quizu:
+                <div th:text="|${quiz.points} / ${#lists.size(quiz.questions)}|"/>
+            </h1>
+            <div class="my-3 p-3 bg-white rounded box-shadow">
+                <th:block th:object="${quiz}">
+                    <div th:each="question, i: ${quiz.questions}" class="w-100">
+                        <div class="media-body border-bottom border-top border-gray row d-flex ml-2">
+                            <strong th:text="${i.count}+'. '"></strong>
+                            <div th:text="${question.text}"></div>
+                        </div>
+                        <div th:each="answer, j: ${quiz.questions[__${i.index}__].answers}" class="row d-flex ml-4">
+                            <div th:if="${#lists.contains(question.answers, answer)}">
+                                <div class="form-check float-left">
+                                    <input class="form-check-input" type="checkbox"
+                                           th:field="*{questions[__${i.index}__].answers[__${j.index}__].correct}"
+                                           th:value="${answer.correct}" disabled="true">
+                                    <label class="form-check-label"
+                                           th:text="*{questions[__${i.index}__].answers[__${j.index}__].text}">
+                                        Default checkbox
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        Punkty: <div th:text="*{correct[__${i.index}__]} ? '1' : '0'"></div>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/footer.html"></footer>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</body>
+</html>

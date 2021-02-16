@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edycja użytkownika</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<a class="btn btn-dark btn-lg my-2 m-1" aria-current="page" href="#" th:href="@{/user}">Wróć do panel
+    zarządzania użytkownikami</a>
+<main class="jumbotron text-center" sec:authorize="hasRole('TEACHER')">
+    <div class="container-fluid text-center h-100">
+        <form th:action="@{{id} (id = ${user.id})}" th:object="${user}" th:method="put"
+              style="max-width: 500px; margin: 0 auto;">
+
+            <h1 class="jumbotron-heading">Edytuj użytkownika</h1>
+            <div class="my-3 p-3 bg-white rounded box-shadow">
+                <p>
+                    <label for="inputLogin" class="sr-only">Login</label>
+                    <input type="text" id="inputLogin" class="form-control"
+                           th:field="*{login}" placeholder="Login"
+                           required th:min="6" th:max="20">
+                </p>
+                <ul class="text-danger" th:if="${#fields.hasErrors('login')}"
+                    th:each="error: ${#fields.errors('login')}">
+                    <li th:each="message : ${error.split(',')}">
+                        <p class="error-message" th:text="${message}"></p>
+                    </li>
+                </ul>
+                <p>
+                    <label for="inputPassword" class="sr-only">Hasło</label>
+                    <input type="password" id="inputPassword" class="form-control" th:field="*{password}"
+                           placeholder="Hasło" required th:min="6" th:max="68">
+                </p>
+                <p>
+                    <label for="inputConfirmPassword" class="sr-only">Powtórz hasło</label>
+                    <input type="password" name="confirmPassword" id="inputConfirmPassword" class="form-control"
+                           th:name="confirmPassword" placeholder="Powtórz hasło" required th:min="6" th:max="68">
+                </p>
+                <ul class="text-danger" th:if="${#fields.hasErrors('password')}"
+                    th:each="error: ${#fields.errors('password')}">
+                    <li th:each="message : ${error.split(',')}">
+                        <p class="error-message" th:text="${message}"></p>
+                    </li>
+                </ul>
+                <p class="text-danger" th:if="${param.errorPassword}">
+                    Podane hasła się nie zgadzają.
+                </p>
+                <p class="text-danger" th:if="${param.errorLogin}">
+                    Podany login już istnieje w bazie.
+                </p>
+                <div th:if="${!#lists.contains(user.roles,adminRole)}">
+                    <h1 class="h3 mb-3 font-weight-normal">Dostępne role</h1>
+                    <th:block th:each="userR: ${userRoles}" th:object="${userR}">
+                        <p>
+                            <input type="radio" name="userRoles" th:name="userRoles" th:value="${userR.role}"
+                                   th:checked="${#lists.contains(user.roles,userR)}">
+                            <label th:text="${userR.role}"></label>
+                        </p>
+                    </th:block>
+                    <h1 class="h3 mb-3 font-weight-normal">Dostępne przedmioty</h1>
+                    <th:block th:each="userS: ${userSubjects}" th:object="${userS}">
+                        <p>
+                            <input type="checkbox" name="userSubjects" th:name="userSubjects" th:value="${userS.name}"
+                                   th:checked="${#lists.contains(user.subjects,userS)}">
+                            <label th:text="${userS.name}"></label>
+                        </p>
+                    </th:block>
+                </div>
+                <p>
+                    <button type="submit" class="btn btn-dark" value="Edytuj użytkownika">Edytuj użytkownika</button>
+                </p>
+            </div>
+        </form>
+    </div>
+</main>
+<footer th:replace="fragments/footer.html"></footer>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</body>
+</html>

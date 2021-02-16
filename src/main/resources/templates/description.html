@@ -1,0 +1,51 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opis aplikacji</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<main class="jumbotron text-center">
+    <div class="container d-flex align-middle h-auto desc-pad">
+        <div class="col align-self-center">
+            <h1 class="jumbotron-heading">Aplikacja Quiz</h1>
+            <p class="lead text-muted">Celem projektu jest przeprowadzanie quizów w celu pogłębienia wiedzy z
+                przedmiotów
+                które zostaną stworzone w aplikacji.</p>
+            <div class="my-3 p-3 bg-white rounded box-shadow">
+                <h6 class="border-bottom border-gray pb-2 mb-0">Dostępne typy użytkowników w aplikacji</h6>
+                <div class="media text-muted pt-3" th:each="role : ${roles}" th:object="${role}">
+                    <th:block th:switch="${role.role}">
+                        <div th:case="'ROLE_ADMIN'" class="w-100">
+                            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                <strong class="d-block text-gray-dark float-left">Administator</strong>
+                            <div th:text="${role.description}"></div>
+                            </div>
+                        </div>
+                        <div th:case="'ROLE_TEACHER'" class="w-100">
+                            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                <strong class="d-block text-gray-dark float-left">Nauczyciel</strong>
+                                <div th:text="${role.description}"></div>
+                            </div>
+                        </div>
+                        <div th:case="'ROLE_STUDENT'" class="w-100">
+                            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                <strong class="d-block text-gray-dark float-left">Student</strong>
+                                <div th:text="${role.description}"></div>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/footer.html"></footer>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</body>
+</html>

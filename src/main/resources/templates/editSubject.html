@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edycja przedmiotu</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<a class="btn btn-dark btn-lg my-2 m-1" aria-current="page" href="#" th:href="@{/subject}">Wróć do zarządzania
+    przedmiotami</a>
+<main class="jumbotron text-center">
+    <div class="container-fluid text-center h-100" sec:authorize="hasRole('ADMIN')">
+        <form th:action="@{{id} (id = ${subject.id})}" th:object="${subject}" th:method="put"
+              style="max-width: 500px; margin: 0 auto;">
+            <h1 class="jumbotron-heading">Edytuj przedmiot</h1>
+            <div class="my-3 p-3 bg-white rounded box-shadow">
+                <p>
+                    <label for="inputSubject" class="sr-only">Przedmiot</label>
+                    <input type="text" id="inputSubject" class="form-control"
+                           th:field="*{name}" th:value="*{name}" placeholder="Nazwa przedmiotu" required th:min="3"
+                           th:max="30">
+                </p>
+                <ul class="text-danger" th:if="${#fields.hasErrors('name')}" th:each="error: ${#fields.errors('name')}">
+                    <li th:each="message : ${error.split(',')}">
+                        <p class="error-message" th:text="${message}"></p>
+                    </li>
+                </ul>
+                <h1 class="h3 mb-3 font-weight-normal">Użytkownicy z dostępem do przedmiotu</h1>
+                <th:block th:each="user: ${users}" th:object="${user}">
+                    <p>
+                        <input type="checkbox" name="users" th:name="users" th:value="${user.login}"
+                               th:checked="${#lists.contains(subjectUsers,user)}">
+                        <label th:text="${user.login}"></label>
+                    </p>
+                </th:block>
+                <p>
+                    <button type="submit" class="btn btn-dark" value="Edytuj przedmiot">Edytuj przedmiot</button>
+                </p>
+            </div>
+        </form>
+    </div>
+</main>
+<footer th:replace="fragments/footer.html"></footer>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</body>
+</html>

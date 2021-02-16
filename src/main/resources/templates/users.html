@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Użytkownicy</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<a class="btn btn-dark btn-lg my-2 m-1" aria-current="page" href="#" th:href="@{/homepage}">Wróć do panel
+    zarządzania</a>
+<main class="jumbotron text-center" sec:authorize="hasRole('TEACHER')">
+    <div class="container-fluid text-center h-100">
+        <form th:action="@{/user}" th:object="${user}" method="post" th:method="post"
+              style="max-width: 500px; margin: 0 auto;">
+            <h1 class="jumbotron-heading">Dodaj użytkownika</h1>
+            <div class="my-3 p-3 bg-white rounded box-shadow">
+                <p>
+                    <label for="inputLogin" class="sr-only">Login</label>
+                    <input type="text" id="inputLogin" class="form-control"
+                           th:field="*{login}" placeholder="Login"
+                           required th:min="6" th:max="20">
+                </p>
+                <ul class="text-danger" th:if="${#fields.hasErrors('login')}"
+                    th:each="error: ${#fields.errors('login')}">
+                    <li th:each="message : ${error.split(',')}">
+                        <p class="error-message" th:text="${message}"></p>
+                    </li>
+                </ul>
+                <p>
+                    <label for="inputPassword" class="sr-only">Hasło</label>
+                    <input type="password" id="inputPassword" class="form-control" th:field="*{password}"
+                           placeholder="Hasło" required th:min="6" th:max="68">
+                </p>
+                <p>
+                    <label for="inputConfirmPassword" class="sr-only">Powtórz hasło</label>
+                    <input type="password" name="confirmPassword" id="inputConfirmPassword" class="form-control"
+                           th:name="confirmPassword" placeholder="Powtórz hasło" required th:min="6" th:max="68">
+                </p>
+                <ul class="text-danger" th:if="${#fields.hasErrors('password')}"
+                    th:each="error: ${#fields.errors('password')}">
+                    <li th:each="message : ${error.split(',')}">
+                        <p class="error-message" th:text="${message}"></p>
+                    </li>
+                </ul>
+                <p class="text-danger" th:if="${param.errorPassword}">
+                    Podane hasła się nie zgadzają.
+                </p>
+                <p class="text-danger" th:if="${param.errorLogin}">
+                    Podany login już istnieje w bazie.
+                </p>
+                <h1 class="h3 mb-3 font-weight-normal">Dostępne role</h1>
+                <th:block th:each="userR: ${userRoles}" th:object="${userR}">
+                    <p>
+                        <input type="radio" name="userRoles" th:name="userRoles" th:value="${userR.role}"
+                               th:checked="${userR == checked}">
+                        <label th:text="${userR.role}"></label>
+                    </p>
+                </th:block>
+                <h1 class="h3 mb-3 font-weight-normal">Dostępne przedmioty</h1>
+                <th:block th:each="userS: ${userSubjects}" th:object="${userS}">
+                    <p>
+                        <input type="checkbox" name="userSubjects" th:name="userSubjects" th:value="${userS.name}">
+                        <label th:text="${userS.name}"></label>
+                    </p>
+                </th:block>
+                <p>
+                    <button type="submit" class="btn btn-dark" value="Dodaj użytkownika">Dodaj użytkownika</button>
+                </p>
+            </div>
+        </form>
+    </div>
+    <div class="container d-flex h-75 align-middle div_center">
+        <div class="col align-self-center" th:if="${users.totalPages > 0}">
+            <h1 class="jumbotron-heading">Dostępni użytkownicy</h1>
+            <div th:each="user, i: ${users}" th:object="${user}" class="my-3 p-3 bg-white rounded box-shadow">
+                <p class="lead text-muted" th:text="${i.count + users.getPageable().getPageNumber()*users.getPageable().getPageSize()}">Licznik</p>
+                <label>Login: </label>
+                <p class="lead text-muted" th:text="*{login}">Login</p>
+                <form th:action="@{user/{id} (id = ${user.id})}" th:method="delete" th:if="${!#lists.contains(user.roles,adminRole)}">
+                    <button type="submit" class="btn btn-dark my-2"
+                            th:disabled="${#lists.contains(user.roles,adminRole)}">
+                        Usuń użytkownika
+                    </button>
+                </form>
+                <p>
+                    <a class="btn btn-dark my-2" href="#" role="button"
+                       th:href="@{/user/edit/{id} (id = ${user.id})}">Edytuj użytkownika</a>
+                </p>
+            </div>
+            <nav aria-label="Page navigation example" th:if="${users.totalPages > 0}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:if="${users.getPageable().getPageNumber() > 0}">
+                        <a class="page-link" href="#"
+                           th:href="@{/user(size=${users.size}, page=${users.getPageable().getPageNumber()})}">Poprzednia</a>
+                    </li>
+                    <li class="page-item" th:each="pageNumber : ${pageNumbers}">
+                         <span class="page-link" th:if="${pageNumber == (users.getPageable().getPageNumber()+1)}"
+                               th:text="${pageNumber}">
+                            1
+                        <span class="sr-only">(current)</span>
+                        </span>
+                        <a th:unless="${pageNumber == (users.getPageable().getPageNumber()+1)}" class="page-link"
+                           href="#" th:href="@{/user(size=${users.size}, page=${pageNumber})}"
+                           th:text="${pageNumber}"
+                        >1</a>
+                    </li>
+                    <li class="page-item" th:if="${users.getPageable().getPageNumber() < pageNumbers.size()-1}">
+                        <a class="page-link" href="#"
+                           th:href="@{/user(size=${users.size}, page=${users.getPageable().getPageNumber()+2})}">Następna</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col align-self-center" th:unless="${users.totalPages > 0}">
+            <h1 class="jumbotron-heading">Brak dostępnych użytkowników</h1>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/footer.html"></footer>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</body>
+</html>

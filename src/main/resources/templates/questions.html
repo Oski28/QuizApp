@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pytania</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<a class="btn btn-dark btn-lg my-2 m-1" aria-current="page" href="#" th:href="@{/homepage}">Wróć do panel
+    zarządzania</a>
+<main class="jumbotron text-center" sec:authorize="hasRole('TEACHER')">
+    <div class="container-fluid text-center h-100">
+        <form th:action="@{/question}" th:object="${question}" method="post" th:method="post"
+              style="margin: 0 auto;" class="w-75">
+            <h1 class="jumbotron-heading">Dodaj nowe pytanie</h1>
+            <div class="my-3 p-3 bg-white rounded box-shadow">
+                <p>
+                    <label for="inputText" class="sr-only">Treść pytania</label>
+                    <input type="text" id="inputText" class="form-control"
+                           th:field="${question.text}" placeholder="Treść pytania" required th:min="10" th:max="200">
+                </p>
+                <ul class="text-danger" th:if="${#fields.hasErrors('text')}" th:each="error: ${#fields.errors('text')}">
+                    <li th:each="message : ${error.split(',')}">
+                        <p class="error-message" th:text="${message}"></p>
+                    </li>
+                </ul>
+                <div th:each="answer,i: ${question.answers}">
+                    <p>
+                        <input type="checkbox" th:field="${question.answers[__${i.index}__].correct}">
+                        <input class="w-75" type="text" th:field="${question.answers[__${i.index}__].text}"
+                               placeholder="Treść odpowiedzi" th:max="100">
+                    </p>
+                </div>
+                <p class="text-danger" th:if="${param.error}">
+                    Answers must have 2 or more positions and cannot have empty text field and longer than 100
+                    characters.
+                </p>
+                <p>
+                    <button type="submit" class="btn btn-dark" value="Dodaj pytanie">Dodaj pytanie</button>
+                </p>
+            </div>
+        </form>
+    </div>
+    <div class="container d-flex h-75 align-middle div_center">
+        <div class="col align-self-center" th:if="${questions.totalPages > 0}">
+            <h1 class="jumbotron-heading">Dostępne pytania</h1>
+            <div th:each="question, i: ${questions}" th:object="${question}"
+                 class="my-3 p-3 bg-white rounded box-shadow">
+                <p class="lead text-muted"
+                   th:text="${i.count + questions.getPageable().getPageNumber()*questions.getPageable().getPageSize()}">
+                    Licznik</p>
+                <p class="lead text-muted" th:text="*{text}">Text</p>
+                <div class="form-check" style="padding-left: 0;">
+                    <ul style="list-style-type: none; padding-left: 0;">
+                        <th:block th:each="answer: ${question.answers}" th:object="${answer}">
+                            <li th:text="*{text}"
+                                th:style="|${answer.correct == false ? 'color: red;' : 'color: green;'}|"></li>
+                        </th:block>
+                    </ul>
+                </div>
+                <form th:action="@{question/{id} (id = ${question.id})}" th:method="delete">
+                    <button type="submit" class="btn btn-dark my-2">
+                        Usuń pytanie
+                    </button>
+                </form>
+                <p>
+                    <a class="btn btn-dark my-2" href="#" role="button"
+                       th:href="@{/question/edit/{id}/?url=__${#httpServletRequest.requestURI}__ (id = ${question.id})}">Edytuj
+                        pytanie</a>
+                </p>
+            </div>
+            <nav aria-label="Page navigation example" >
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:if="${questions.getPageable().getPageNumber() > 0}">
+                        <a class="page-link" href="#"
+                           th:href="@{/question(size=${questions.size}, page=${questions.getPageable().getPageNumber()})}">Poprzednia</a>
+                    </li>
+                    <li class="page-item" th:each="pageNumber : ${pageNumbers}">
+                         <span class="page-link" th:if="${pageNumber == (questions.getPageable().getPageNumber()+1)}"
+                               th:text="${pageNumber}">
+                            1
+                        <span class="sr-only">(current)</span>
+                        </span>
+                        <a th:unless="${pageNumber == (questions.getPageable().getPageNumber()+1)}" class="page-link"
+                           href="#" th:href="@{/question(size=${questions.size}, page=${pageNumber})}"
+                           th:text="${pageNumber}"
+                        >1</a>
+                    </li>
+                    <li class="page-item" th:if="${questions.getPageable().getPageNumber() < pageNumbers.size()-1}">
+                        <a class="page-link" href="#"
+                           th:href="@{/question(size=${questions.size}, page=${questions.getPageable().getPageNumber()+2})}">Następna</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col align-self-center" th:unless="${questions.totalPages > 0}">
+            <h1 class="jumbotron-heading">Brak dostępnych pytań</h1>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/footer.html"></footer>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</body>
+</html>

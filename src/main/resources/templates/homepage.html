@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strona główna</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<main class="jumbotron text-center">
+    <div class="container d-flex h-75 align-middle div_center">
+        <div class="col align-self-center">
+            <h1 class="jumbotron-heading">Strona główna</h1>
+            <p class="lead text-muted">Wybierz co chcesz zrobić</p>
+            <div sec:authorize="hasRole('TEACHER')">
+                <p>
+                    <a class="btn btn-dark btn-lg my-2 w-auto" href="#" th:href="@{/subject}" role="button">Zarządzaj
+                        przedmiotami</a>
+                </p>
+                <p>
+                    <a class="btn btn-dark btn-lg my-2 w-auto" href="#" th:href="@{/user}" role="button">Zarządzaj
+                        użytkownikami</a>
+                </p>
+                <p>
+                    <a class="btn btn-dark btn-lg my-2 w-auto" href="#" th:href="@{/question}" role="button">Zarządzaj
+                        pytaniami</a>
+                </p>
+            </div>
+            <div sec:authorize="hasRole('STUDENT')">
+                <a class="btn btn-dark btn-lg my-2 w-auto" href="#" th:href="@{/quiz}" role="button">Przejdź do
+                    wypełniania quizów</a>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/footer.html"></footer>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</body>
+</html>

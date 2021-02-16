@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<main class="jumbotron text-center">
+    <div class="container-fluid text-center h-100">
+        <form th:action="@{/login}" method="post" style="max-width: 350px; margin: 0 auto;">
+
+            <div th:if="${param.error}">
+                <p class="text-danger">[[${session.SPRING_SECURITY_LAST_EXCEPTION.message}]]</p>
+            </div>
+
+            <div class="my-3 p-3 bg-white rounded box-shadow">
+                <h1 class="h3 mb-3 font-weight-normal">Zaloguj</h1>
+                <p>
+                    <label for="inputLogin" class="sr-only">Login</label>
+                    <input type="text" name="username" id="inputLogin" class="form-control" placeholder="Login" required
+                           autofocus/>
+                </p>
+                <p>
+                    <label for="inputPassword" class="sr-only">Password</label>
+                    <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Hasło"
+                           required/>
+                </p>
+                <div class="checkbox mb-3">
+                    <label>
+                        <input type="checkbox" value="remember-me"> Zapamiętaj mnie
+                    </label>
+                </div>
+                <p>
+                    <button type="submit" value="Login" class="btn btn-dark">Zaloguj</button>
+                </p>
+            </div>
+        </form>
+    </div>
+</main>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<footer th:replace="fragments/footer.html"></footer>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header th:insert="fragments/header.html"></header>
+<a class="btn btn-dark btn-lg my-2 m-1" aria-current="page" href="#" th:href="@{/quiz}">Wróć do listy dostępnych dla
+    Ciebie quizów</a>
+<main class="jumbotron text-center" sec:authorize="hasRole('STUDENT')">
+    <div class="float-right btn btn-dark btn-lg my-2 m-1 sticky-top" id="display" th:text="|${quiz.time}m:00s|">00m:00s</div>
+    <div class="container d-flex h-75 align-middle div_center">
+        <div class="col align-self-center">
+            <h1 class="jumbotron-heading">Wypełnij quiz</h1>
+            <div class="my-3 p-3 bg-white rounded box-shadow">
+                <form th:action="@{/quiz}" th:object="${quiz}" method="post" th:method="post" id="mcQuestion">
+                    <input hidden="hidden" th:field="*{subject}" th:value="${quiz.subject}">
+                    <div th:each="question, i: ${quiz.questions}" class="w-100">
+                        <input hidden="hidden" th:field="*{questions[__${i.index}__]}" th:value="${question}">
+                        <input hidden="hidden" th:field="*{questions[__${i.index}__].id}" th:value="${question.id}">
+                        <input hidden="hidden" th:field="*{questions[__${i.index}__].text}" th:value="${question.text}">
+                        <input hidden="hidden" th:field="*{questions[__${i.index}__].answers}"
+                               th:value="${question.answers}">
+                        <div class="media-body border-bottom border-top border-gray row d-flex ml-2">
+                            <strong class="text-gray-dark" th:text="${i.count}+'. '"></strong>
+                            <div th:text="${question.text}"></div>
+                        </div>
+                        <div th:each="answer, j: ${quiz.questions[__${i.index}__].answers}" class="row d-flex ml-4">
+                            <div th:if="${#lists.contains(question.answers, answer)}">
+                                 <input hidden="hidden" th:field="*{questions[__${i.index}__].answers[__${j.index}__]}"
+                                        th:value="${answer}">
+                                 <input hidden="hidden"
+                                        th:field="*{questions[__${i.index}__].answers[__${j.index}__].id}"
+                                        th:value="${answer.id}">
+                                 <input hidden="hidden"
+                                        th:field="*{questions[__${i.index}__].answers[__${j.index}__].text}"
+                                        th:value="${answer.text}">
+                                 <div class="form-check float-left">
+                                     <input class="form-check-input" type="checkbox"
+                                            th:field="*{questions[__${i.index}__].answers[__${j.index}__].correct}"
+                                            th:value="${answer.correct}">
+                                     <label class="form-check-label"
+                                            th:text="*{questions[__${i.index}__].answers[__${j.index}__].text}">
+                                         Default checkbox
+                                     </label>
+                                 </div>
+                                <input hidden="hidden"
+                                        th:field="*{questions[__${i.index}__].answers[__${j.index}__].question}"
+                                        th:value="${answer.question}">
+                             </div>
+                         </div>
+                     </div>
+                     <button type="submit" class="btn btn-dark mt-2" value="Wyślij quiz">Wyślij quiz</button>
+                 </form>
+             </div>
+         </div>
+     </div>
+ </main>
+ <footer th:replace="fragments/footer.html"></footer>
+ </body>
+ <script>
+     let div = document.getElementById('display');
+
+     function CountDown(duration, display) {
+         let timer = duration, minutes, seconds;
+         let interVal = setInterval(function () {
+             minutes = parseInt(timer / 60, 10);
+             seconds = parseInt(timer % 60, 10);
+
+             minutes = minutes < 10 ? "0" + minutes : minutes;
+             seconds = seconds < 10 ? "0" + seconds : seconds;
+             display.innerHTML = "<b>" + minutes + "m : " + seconds + "s" + "</b>";
+             if (timer > 0) {
+                 --timer;
+             } else {
+                 clearInterval(interVal)
+                 SubmitFunction();
+             }
+
+         }, 1000);
+
+     }
+
+     function SubmitFunction() {
+         document.getElementById('mcQuestion').submit();
+     }
+
+     let time = [[${quiz.time}]] * 60;
+     CountDown(time, div);
+ </script>
+ <script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+ </html>
